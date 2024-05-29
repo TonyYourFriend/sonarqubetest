@@ -25,7 +25,11 @@ jobs:
       run: dotnet restore
 
     - name: Build solution
-      run: dotnet build --no-restore
+      env:
+        DOTNET_ROOT: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet
+        DOTNET_HOST_PATH: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet\dotnet.exe
+      run: |
+        dotnet build --no-restore -p:Platform="Any CPU" -p:Configuration="Release"
 
     - name: Install SonarScanner for .NET
       run: dotnet tool install --global dotnet-sonarscanner
@@ -34,16 +38,20 @@ jobs:
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        DOTNET_ROOT: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet
+        DOTNET_HOST_PATH: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet\dotnet.exe
       run: |
         dotnet sonarscanner begin /k:"TonyYourFriend_sonarqubetest_d5ca3011-0da9-4380-b605-ea742cd704cc" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
-        dotnet build
+        dotnet build -p:Platform="Any CPU" -p:Configuration="Release"
         dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
     - name: Publish Quality Gate Result
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        DOTNET_ROOT: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet
+        DOTNET_HOST_PATH: C:\Users\runneradmin\AppData\Local\Microsoft\dotnet\dotnet.exe
       run: |
         dotnet sonarscanner begin /k:"TonyYourFriend_sonarqubetest_d5ca3011-0da9-4380-b605-ea742cd704cc" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.qualitygate.wait=true
-        dotnet build
+        dotnet build -p:Platform="Any CPU" -p:Configuration="Release"
         dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
