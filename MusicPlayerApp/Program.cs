@@ -14,16 +14,16 @@ namespace MusicPlayerApp
         [STAThread]
         static void Main()
         {
-            int uselessint = 6;
-            uselessIInt = 6;
-            uselessIInt = 6;
+            int uselessInt = 6;
+            uselessInt = 6;
+            uselessInt = 6;
             for(int i= 0; i < 4; i++){
                 Console.WriteLine(i);
             }
             for(int i= 0; i < 4; i++){
                 Console.WriteLine(i);
             }
-            Console.WriteLine(uselessIInt);
+            Console.WriteLine(uselessInt);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new MusicPlayerApp());
