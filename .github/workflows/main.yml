@@ -29,20 +29,21 @@ jobs:
     - name: Install NuGet
       run: choco install nuget.commandline
 
-    - name: List MSBuild directories
+    - name: Install vswhere
+      run: choco install vswhere
+
+    - name: Find MSBuild Path
+      id: msbuild-path
       run: |
-        dir "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin"
-        dir "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin"
+        $msbuildPath = &"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
+        echo "##[set-output name=msbuild_path;]$msbuildPath"
 
     - name: Restore dependencies
       run: nuget restore
 
     - name: Build solution
       run: |
-        $msbuildPath = "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
-        if (!(Test-Path $msbuildPath)) {
-          $msbuildPath = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
-        }
+        $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
         & $msbuildPath /p:Configuration=Release /p:Platform="Any CPU"
 
     - name: Install SonarScanner for .NET
@@ -54,10 +55,7 @@ jobs:
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       run: |
         dotnet sonarscanner begin /k:"TonyYourFriend_sonarqubetest_d5ca3011-0da9-4380-b605-ea742cd704cc" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
-        $msbuildPath = "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
-        if (!(Test-Path $msbuildPath)) {
-          $msbuildPath = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
-        }
+        $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
         & $msbuildPath /p:Configuration=Release /p:Platform="Any CPU"
         dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
@@ -67,9 +65,6 @@ jobs:
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       run: |
         dotnet sonarscanner begin /k:"TonyYourFriend_sonarqubetest_d5ca3011-0da9-4380-b605-ea742cd704cc" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.qualitygate.wait=true
-        $msbuildPath = "C:\Program Files\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
-        if (!(Test-Path $msbuildPath)) {
-          $msbuildPath = "C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\MSBuild\Current\Bin\MSBuild.exe"
-        }
+        $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
         & $msbuildPath /p:Configuration=Release /p:Platform="Any CPU"
         dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
