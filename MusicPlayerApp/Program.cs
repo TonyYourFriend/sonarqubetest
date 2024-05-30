@@ -15,8 +15,8 @@ namespace MusicPlayerApp
         static void Main()
         {
             int uselessIInt = 5;
-            int uselessIInt = 5;
-            int uselessIInt = 5;
+            uselessIInt = 5;
+            uselessIInt = 5;
             for(int i= 0; i < 5; i++){
                 Console.WriteLine(i);
             }
