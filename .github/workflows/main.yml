@@ -78,10 +78,7 @@ jobs:
           /d:sonar.issue.ignore.multicriteria.e1.ruleKey=csharpsquid:S1075 `
           /d:sonar.issue.ignore.multicriteria.e1.resourceKey=**/*.cs `
           /d:sonar.issue.ignore.multicriteria.e2.ruleKey=csharpsquid:S100 `
-          /d:sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.cs `
-          /d:sonar.tests="**/*Tests.cs" `
-          /d:sonar.test.inclusions="**/*Tests.cs" `
-          /d:sonar.test.exclusions="**/IntegrationTests/**"
+          /d:sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.cs
 
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
         & $msbuildPath /p:Configuration=Release /p:Platform="Any CPU"
