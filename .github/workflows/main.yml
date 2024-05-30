@@ -38,6 +38,12 @@ jobs:
         $msbuildPath = &"C:\Program Files (x86)\Microsoft Visual Studio\Installer\vswhere.exe" -latest -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe
         echo "##[set-output name=msbuild_path;]$msbuildPath"
 
+    - name: Setup Java
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
     - name: Restore dependencies
       run: nuget restore
 
