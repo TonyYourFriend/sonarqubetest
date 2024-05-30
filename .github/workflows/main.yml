@@ -52,6 +52,11 @@ jobs:
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
         & $msbuildPath /p:Configuration=Release /p:Platform="Any CPU"
 
+    - name: Run tests and collect code coverage
+      run: |
+        $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
+        dotnet test --collect:"XPlat Code Coverage"
+
     - name: Install SonarScanner for .NET
       run: dotnet tool install --global dotnet-sonarscanner
 
@@ -60,7 +65,7 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       run: |
-        dotnet sonarscanner begin /k:"TonyYourFriend_sonarqubetest_d5ca3011-0da9-4380-b605-ea742cd704cc" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
+        dotnet sonarscanner begin /k:"TonyYourFriend_sonarqubetest_d5ca3011-0da9-4380-b605-ea742cd704cc" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
         & $msbuildPath /p:Configuration=Release /p:Platform="Any CPU"
         dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
