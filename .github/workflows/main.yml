@@ -19,7 +19,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: '8.x'
+        dotnet-version: '7.x'
 
     - name: Install Visual Studio Build Tools
       run: |
@@ -45,17 +45,17 @@ jobs:
         java-version: '17'
 
     - name: Restore dependencies
-      run: nuget restore
+      run: dotnet restore
 
-    - name: Build solution
+    - name: Build all projects
       run: |
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
-        & $msbuildPath /p:Configuration=Release /p:Platform="Any CPU"
+        Get-ChildItem -Recurse -Filter *.csproj | ForEach-Object { & $msbuildPath $_.FullName /p:Configuration=Release /p:Platform="Any CPU" }
 
     - name: Run tests and collect code coverage
       run: |
         dotnet tool install --global coverlet.console
-        dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/ /p:MergeWith=../**/TestResults/coverage.opencover.xml
+        Get-ChildItem -Recurse -Filter *.csproj | Where-Object { $_.FullName -match 'Test' } | ForEach-Object { dotnet test $_.FullName --collect:"XPlat Code Coverage" /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/ }
 
     - name: Install SonarScanner for .NET
       run: dotnet tool install --global dotnet-sonarscanner
@@ -80,7 +80,7 @@ jobs:
           /d:sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.cs
 
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
-        & $msbuildPath /p:Configuration=Release /p:Platform="Any CPU"
+        & $msbuildPath /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" **/*.sln
         dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
     - name: Publish Quality Gate Result
@@ -94,5 +94,5 @@ jobs:
           /d:sonar.qualitygate.wait=true
 
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
-        & $msbuildPath /p:Configuration=Release /p:Platform="Any CPU"
+        & $msbuildPath /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" **/*.sln
         dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
