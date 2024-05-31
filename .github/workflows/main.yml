@@ -60,17 +60,17 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       run: |
-        dotnet sonarscanner begin /k:"TonyYourFriend_sonarqubetest_d5ca3011-0da9-4380-b605-ea742cd704cc" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
+        dotnet sonarscanner begin /k:"TonyYourFriend_sonarqubetest_d5ca3011-0da9-4380-b605-ea742cd704cc" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}"
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
         & $msbuildPath /p:Configuration=Release /p:Platform="Any CPU"
-        dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
     - name: Publish Quality Gate Result
       env:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
       run: |
-        dotnet sonarscanner begin /k:"TonyYourFriend_sonarqubetest_d5ca3011-0da9-4380-b605-ea742cd704cc" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.qualitygate.wait=true
+        dotnet sonarscanner begin /k:"TonyYourFriend_sonarqubetest_d5ca3011-0da9-4380-b605-ea742cd704cc" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" /d:sonar.qualitygate.wait=true
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
         & $msbuildPath /p:Configuration=Release /p:Platform="Any CPU"
-        dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
