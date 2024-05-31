@@ -55,7 +55,7 @@ jobs:
     - name: Run tests and collect code coverage
       run: |
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
-        dotnet test --collect:"XPlat Code Coverage"
+        dotnet test testapi.tests --collect:"XPlat Code Coverage"
 
     - name: Install SonarScanner for .NET
       run: dotnet tool install --global dotnet-sonarscanner
