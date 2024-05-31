@@ -17,6 +17,7 @@ namespace MusicPlayerApp
         [STAThread]
         public static void Main()
         {
+            Console.WriteLine("hej");
             ApplicationWrapper.EnableVisualStyles();
             ApplicationWrapper.SetCompatibleTextRenderingDefault(false);
             ApplicationWrapper.Run(new MusicPlayerApp());
