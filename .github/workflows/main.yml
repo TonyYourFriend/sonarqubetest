@@ -51,9 +51,9 @@ jobs:
     - name: Find Solution File
       id: find-sln
       run: |
-        $solution = Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter *.sln | Select-Object -First 1
+        $solution = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter *.sln | Select-Object -First 1
         if (-not $solution) { throw "Solution file not found" }
-        echo "##[set-output name=solution;]$solution.FullName"
+        echo "##[set-output name=solution;]$($solution.FullName)"
 
     - name: Build solution
       run: |
