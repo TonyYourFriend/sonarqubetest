@@ -64,7 +64,7 @@ jobs:
       run: |
         dotnet tool install --global coverlet.console
         $solution = "${{ steps.find-sln.outputs.solution }}"
-        dotnet test $solution --collect:"XPlat Code Coverage" /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/ /p:MergeWith=../**/TestResults/coverage.opencover.xml
+        dotnet test testapi.tests --collect:"XPlat Code Coverage" /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/ /p:MergeWith=../**/TestResults/coverage.opencover.xml
 
     - name: Install SonarScanner for .NET
       run: dotnet tool install --global dotnet-sonarscanner
