@@ -47,15 +47,24 @@ jobs:
     - name: Restore dependencies
       run: dotnet restore
 
+    - name: Find Solution File
+      id: find-sln
+      run: |
+        $solution = Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter *.sln | Select-Object -First 1
+        if (-not $solution) { throw "Solution file not found" }
+        echo "##[set-output name=solution;]$solution.FullName" 
+
     - name: Build solution
       run: |
+        $solution = "${{ steps.find-sln.outputs.solution }}"
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
-        & $msbuildPath /p:Configuration=Release /p:Platform="Any CPU"
+        & $msbuildPath $solution /p:Configuration=Release /p:Platform="Any CPU"
 
     - name: Run tests and collect code coverage
       run: |
-        $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
-        dotnet test testapi.tests --collect:"XPlat Code Coverage"
+        dotnet tool install --global coverlet.console
+        $solution = "${{ steps.find-sln.outputs.solution }}"
+        dotnet test $solution --collect:"XPlat Code Coverage" /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/ /p:MergeWith=../**/TestResults/coverage.opencover.xml
 
     - name: Install SonarScanner for .NET
       run: dotnet tool install --global dotnet-sonarscanner
@@ -79,8 +88,9 @@ jobs:
           /d:sonar.issue.ignore.multicriteria.e2.ruleKey=csharpsquid:S100 `
           /d:sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.cs
 
+        $solution = "${{ steps.find-sln.outputs.solution }}"
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
-        & $msbuildPath /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" **/*.sln
+        & $msbuildPath $solution /p:Configuration=Release /p:Platform="Any CPU" **/*.sln
         dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
     - name: Publish Quality Gate Result
@@ -92,7 +102,8 @@ jobs:
           /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
           /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" `
           /d:sonar.qualitygate.wait=true
-
+        
+        $solution = "${{ steps.find-sln.outputs.solution }}"
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
-        & $msbuildPath /t:Rebuild /p:Configuration=Release /p:Platform="Any CPU" **/*.sln
+        & $msbuildPath $solution /p:Configuration=Release /p:Platform="Any CPU" **/*.sln
         dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
