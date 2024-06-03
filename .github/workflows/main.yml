@@ -19,7 +19,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
-        dotnet-version: '8.x'
+        dotnet-version: '6.x'
 
     - name: Install Visual Studio Build Tools
       run: |
@@ -44,8 +44,7 @@ jobs:
         distribution: 'temurin'
         java-version: '21'
 
-    - name: Restore dependencies
-      run: dotnet restore
+    
 
     - name: Find Solution File
       id: find-sln
@@ -53,6 +52,11 @@ jobs:
         $solution = Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter *.sln | Select-Object -First 1
         if (-not $solution) { throw "Solution file not found" }
         echo "##[set-output name=solution;]$solution" 
+
+    - name: Restore dependencies
+      run: |
+        $solution = "${{ steps.find-sln.outputs.solution }}"
+        dotnet restore $solution
 
     - name: Build solution
       run: |
@@ -64,7 +68,7 @@ jobs:
       run: |
         dotnet tool install --global coverlet.console
         $solution = "${{ steps.find-sln.outputs.solution }}"
-        dotnet test testapi.tests --logger "trx" --results-directory ./TestResults --collect:"XPlat Code Coverage" /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/
+        dotnet test $solution --logger "trx" --results-directory ./TestResults --collect:"XPlat Code Coverage" /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/
 
     - name: Install SonarScanner for .NET
       run: dotnet tool install --global dotnet-sonarscanner
