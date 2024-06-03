@@ -63,7 +63,7 @@ jobs:
     - name: Run tests and collect code coverage
       run: |
         dotnet tool install --global coverlet.console
-        $solution = "${{ steps.find-sln.outputs.solution }}"
+        $solution = "${{ steps.find-sln.outputs.solution }}"A
         dotnet test $solution --logger "trx" --results-directory ./TestResults --collect:"XPlat Code Coverage" /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/
 
     - name: Install SonarScanner for .NET
@@ -94,9 +94,9 @@ jobs:
           /d:sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.cs
 
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
-        $solution = "${{ env.solution }}"
+        $solution = "${{ steps.find-sln.outputs.solution }}"
         & $msbuildPath $solution /p:Configuration=Release /p:Platform="Any CPU"
-        dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
 
     - name: Publish Quality Gate Result
       env:
@@ -109,6 +109,6 @@ jobs:
           /d:sonar.qualitygate.wait=true
         
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
-        $solution = "${{ env.solution }}"
+        $solution = "${{ steps.find-sln.outputs.solution }}"
         & $msbuildPath $solution /p:Configuration=Release /p:Platform="Any CPU"
-        dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
