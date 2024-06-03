@@ -88,10 +88,10 @@ jobs:
           /d:sonar.issue.ignore.multicriteria.e2.ruleKey=csharpsquid:S100 `
           /d:sonar.issue.ignore.multicriteria.e2.resourceKey=**/*.cs
 
-        $solution = "${{ steps.find-sln.outputs.solution }}"
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
-        & $msbuildPath $solution /p:Configuration=Release /p:Platform="Any CPU" **/*.sln
-        dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        $solution = "${{ env.solution }}"
+        & $msbuildPath $solution /p:Configuration=Release /p:Platform="Any CPU"
+        dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
 
     - name: Publish Quality Gate Result
       env:
@@ -103,7 +103,7 @@ jobs:
           /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" `
           /d:sonar.qualitygate.wait=true
         
-        $solution = "${{ steps.find-sln.outputs.solution }}"
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
-        & $msbuildPath $solution /p:Configuration=Release /p:Platform="Any CPU" **/*.sln
-        dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        $solution = "${{ env.solution }}"
+        & $msbuildPath $solution /p:Configuration=Release /p:Platform="Any CPU"
+        dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
