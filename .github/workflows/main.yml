@@ -111,4 +111,4 @@ jobs:
         $msbuildPath = "${{ steps.msbuild-path.outputs.msbuild_path }}"
         $solution = "${{ steps.find-sln.outputs.solution }}"
         & $msbuildPath $solution /p:Configuration=Release /p:Platform="Any CPU"
-        dotnet sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+        dotnet sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
