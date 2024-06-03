@@ -42,7 +42,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         distribution: 'temurin'
-        java-version: '17'
+        java-version: '21'
 
     - name: Restore dependencies
       run: dotnet restore
@@ -64,7 +64,7 @@ jobs:
       run: |
         dotnet tool install --global coverlet.console
         $solution = "${{ steps.find-sln.outputs.solution }}"
-        dotnet test testapi.tests --collect:"XPlat Code Coverage" /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/ /p:MergeWith=../**/TestResults/coverage.opencover.xml
+        dotnet test testapi.tests --logger "trx" --results-directory ./TestResults --collect:"XPlat Code Coverage" /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/
 
     - name: Install SonarScanner for .NET
       run: dotnet tool install --global dotnet-sonarscanner
@@ -77,7 +77,7 @@ jobs:
         dotnet sonarscanner begin /k:"TonyYourFriend_sonarqubetest_d5ca3011-0da9-4380-b605-ea742cd704cc" `
           /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
           /d:sonar.host.url="${{ secrets.SONAR_HOST_URL }}" `
-          /d:sonar.cs.opencover.reportsPaths="**/TestResults/coverage.opencover.xml" `
+          /d:sonar.cs.opencover.reportsPaths="./TestResults/coverage.opencover.xml" `
           /d:sonar.scm.provider="git" `
           /d:sonar.coverage.exclusions="**/Migrations/**" `
           /d:sonar.cpd.exclusions="**/Test/**" `
