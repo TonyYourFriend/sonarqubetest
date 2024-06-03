@@ -63,7 +63,7 @@ jobs:
     - name: Run tests and collect code coverage
       run: |
         dotnet tool install --global coverlet.console
-        $solution = "${{ steps.find-sln.outputs.solution }}"A
+        $solution = "${{ steps.find-sln.outputs.solution }}"
         dotnet test $solution --logger "trx" --results-directory ./TestResults --collect:"XPlat Code Coverage" /p:CoverletOutputFormat=opencover /p:CoverletOutput=./TestResults/
 
     - name: Install SonarScanner for .NET
